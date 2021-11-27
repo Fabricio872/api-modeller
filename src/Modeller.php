@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Fabricio872\ApiModeller\Services;
+namespace Fabricio872\ApiModeller;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Fabricio872\ApiModeller\Annotations\Resource;
 use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
+use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
 use Twig\Source;
 
-class Modeller implements ModellerInterface
+class Modeller
 {
     private Reader $reader;
 
-    private HttpClientInterface $client;
+    private ClientInterface $client;
 
     private Environment $twig;
 
-    public function __construct(Reader $reader, HttpClientInterface $client, Environment $twig)
+    public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
     {
         $this->reader = $reader;
         $this->client = $client;
@@ -45,7 +45,7 @@ class Modeller implements ModellerInterface
             array_merge_recursive($annotation->options, $repo->getOptions())
         );
 
-        $normalizedContent = self::getSerializer()->decode($response->getContent(), $annotation->type);
+        $normalizedContent = self::getSerializer()->decode($response, $annotation->type);
         $return = new ArrayCollection();
         if (array_values($normalizedContent) === $normalizedContent) {
             foreach ($normalizedContent as $normalizedItem) {
@@ -54,6 +54,14 @@ class Modeller implements ModellerInterface
             return $return;
         }
         return self::getSerializer()->denormalize($normalizedContent, $repo->getModel());
+    }
+
+    private static function getSerializer()
+    {
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
+        return new Serializer($normalizers, $encoders);
     }
 
     private function renderEndpoint(Resource $annotation, Repo $repo): string
@@ -66,14 +74,6 @@ class Modeller implements ModellerInterface
             throw $exception;
         }
         return $rendered;
-    }
-
-    private static function getSerializer()
-    {
-        $encoders = [new XmlEncoder(), new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-
-        return new Serializer($normalizers, $encoders);
     }
 
     private function getResource(string $model, ?string $identifier): Resource

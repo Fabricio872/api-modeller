@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fabricio872\ApiModeller\Services;
+namespace Fabricio872\ApiModeller;
 
 class Repo
 {

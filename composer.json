@@ -2,7 +2,7 @@
     "name": "fabricio872/api-modeller",
     "description": "Symfony bundle for translating foreign API to Doctrine-like models",
     "type": "symfony-bundle",
-    "keywords": ["library", "symfony", "symfony-bundle", "api", "model"],
+    "keywords": ["library", "api", "model"],
     "config": {
         "optimize-autoloader": true,
         "preferred-install": {
@@ -12,10 +12,9 @@
     },
     "require": {
         "php": "^7.4|^8.0",
+        "composer-fallback/php-http.client-implementation.guzzle7": "^1.1",
         "doctrine/annotations": "^1.13",
-        "symfony/config": "^4.4|^5",
-        "symfony/dependency-injection": "^4.4|^5",
-        "symfony/http-client": "^4.4|^5",
+        "doctrine/collections": "^1.6",
         "symfony/http-kernel": "^4.4|^5",
         "symfony/serializer": "^4.4|^5",
         "twig/twig": "^3.3"
