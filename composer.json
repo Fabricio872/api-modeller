@@ -1,6 +1,6 @@
 {
     "name": "fabricio872/api-modeller",
-    "description": "Symfony bundle for translating foreign API to Doctrine-like models",
+    "description": "Library for translating foreign API to Doctrine-like models",
     "type": "symfony-bundle",
     "keywords": ["library", "api", "model"],
     "config": {
