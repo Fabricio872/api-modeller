@@ -9,6 +9,15 @@ Valuable partners:
 
 ![PhpStorm logo](https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg)
 
+Before installation
+===================
+
+> If you are using older php then version 7.2 download with command
+
+```console
+$ composer require fabricio872/api-modeller:^1.0
+```
+
 Installation
 ============
 
@@ -16,19 +25,7 @@ Make sure Composer is installed globally, as explained in the
 [installation chapter](https://getcomposer.org/doc/00-intro.md)
 of the Composer documentation.
 
-Applications that use Symfony Flex
-----------------------------------
-
-Open a command console, enter your project directory and execute:
-
-```console
-$ composer require fabricio872/api-modeller
-```
-
-Applications that don't use Symfony Flex
-----------------------------------------
-
-### Step 1: Download the Bundle
+### Step 1: Download the Library
 
 Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
@@ -37,24 +34,53 @@ following command to download the latest stable version of this bundle:
 $ composer require fabricio872/api-modeller
 ```
 
-### Step 2: Enable the Bundle
+### Step 2: Initialize library
 
-Then, enable the bundle by adding it to the list of registered bundles
-in the `config/bundles.php` file of your project:
+Create new instance of `Fabricio872\ApiModeller\Modeller`. For legacy project is easiest to implement it with Singleton pattern which gives you 
+instance anywhere where you call it as described [here](#calling-the-api).
 
+> create new class somewhere in your composer autoload directory with name Modeller and add your namespace
 ```php
-// config/bundles.php
+use Doctrine\Common\Annotations\AnnotationReader;
+use Fabricio872\ApiModeller\ClientAdapter\Symfony;
+use Symfony\Component\HttpClient\HttpClient;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
-return [
-    // ...
-    Fabricio872\ApiModeller\ApiModellerBundle::class => ['all' => true],
-];
+class Modeller
+{
+    /** @var \Fabricio872\ApiModeller\Modeller */
+    private static $modeller;
+
+    public static function get()
+    {
+        if (!isset(self::$modeller)) {
+            $reader = new AnnotationReader();
+
+            $httpClient = HttpClient::create();
+            $client = new Symfony($httpClient);
+
+            $loader = new FilesystemLoader();
+            $twig = new Environment($loader, [
+                'cache' => '/path/to/compilation_cache',
+            ]);
+
+            self::$modeller = new \Fabricio872\ApiModeller\Modeller(
+                $reader,
+                $client,
+                $twig
+            );
+        }
+        return self::$modeller;
+    }
+}
+
 ```
 
 # Usage
-> This bundle uses models with Annotations similar to Doctrine Entities.
+> This lib uses models with Annotations similar to Doctrine Entities.
 >
-> Usually they are in a directory src/ApiModels but they are not required to be there as long as they have correct namespace
+> Usually they are in a directory `src/ApiModels` but they are not required to be there as long as they have correct namespace
 
 ## Example model with single Resource
 
@@ -88,8 +114,6 @@ class Users
 ```
 
 > endpoint parameter is endpoint which will be called.
->
-> The variable {{api_url}} is Twig global variable configured in twig config (example in [Global variables configuration](#global-variables-configuration) section)
 
 > method parameter is method with which the request will be done 
 > 
@@ -148,34 +172,18 @@ class Users
 }
 ```
 
-
-
-## Global variables configuration
-```yaml
-# config/packages/twig.yaml
-
-twig:
-    ...
-    globals:
-        api_url: 'https://reqres.in'
-```
-
 ## Calling the API
 
-> This bundle can be initialized from symphony's dependency container so in your controller you can call it like this:
+> Instance of class `Fabricio872\ApiModeller\Modeller` can be received like this if configuration was as described [here](#step-2-initialize-library)
 
-This controller dumps model or collection of models form [this example](#example-model-with-single-resource) with namespace Users::class
+This controller dumps model or collection of models form [this example](#example-model-with-single-resource) with namespace `Users::class`
 and sets query parameter 'page' to 2
 ```php
 // src/Controller/SomeController.php
 
-
-    /**
-     * @Route("/", name="some_controller")
-     */
-    public function index(Modeller $modeller): Response
+    public function index()
     {
-        dump($modeller->getData(
+        var_dump(Modeller::get()->getData(
             Repo::new(Users::class)
                 ->setOptions([
                     "query" => [
@@ -183,37 +191,26 @@ and sets query parameter 'page' to 2
                     ]
                 ])
         ));
-
-        return $this->render('some_controller/index.html.twig', [
-            'controller_name' => 'SomeController',
-        ]);
     }
 ```
+> Notice that `Modeller::get()` must have correct namespace pointing to class from [configuration section](#step-2-initialize-library)
 
-This controller dumps model or collection of models form [this example](#example-model-with-multiple-resources) with namespace Users::class
+This controller dumps model or collection of models form [this example](#example-model-with-multiple-resources) with namespace `Users::class`
 and fills the {{id}} variable from model with number 2
 
 noticed that now method setIdentifier is required
 ```php
 // src/Controller/SomeController.php
 
-
-    /**
-     * @Route("/", name="some_controller")
-     */
-    public function index(Modeller $modeller): Response
+    public function index(Modeller $modeller)
     {
-        dump($modeller->getData(
+        var_dump(Modeller::get()->getData(
             Repo::new(Users::class)
                 ->setParameters([
                     "id" => 2
                 ])
                 ->setIdentifier("single")
         ));
-
-        return $this->render('some_controller/index.html.twig', [
-            'controller_name' => 'SomeController',
-        ]);
     }
 ```
 
@@ -232,5 +229,4 @@ This method accepts array and sets twig variables (same as if you render a templ
 from model) to url configuration and can override global twig variables
 
 ### setIdentifier
-This method is required in case when you use multiple Resources for single model as shown in [this example]()
-
+This method is required in case when you use multiple Resources for single model as shown in [this example](#example-model-with-multiple-resources)

@@ -20,11 +20,20 @@ use Twig\Source;
 
 class Modeller
 {
-    private Reader $reader;
+    /**
+     * @var Reader
+     */
+    private $reader;
 
-    private ClientInterface $client;
+    /**
+     * @var ClientInterface
+     */
+    private $client;
 
-    private Environment $twig;
+    /**
+     * @var Environment
+     */
+    private $twig;
 
     public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
     {
@@ -76,7 +85,7 @@ class Modeller
         return $rendered;
     }
 
-    private function getResource(string $model, ?string $identifier): Resource
+    private function getResource(string $model, string $identifier): Resource
     {
         $reflection = new \ReflectionClass($model);
 
