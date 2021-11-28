@@ -11,11 +11,12 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.4|^8.0",
-        "composer-fallback/php-http.client-implementation.guzzle7": "^1.1",
+        "php": "^7.2|^8.0",
         "doctrine/annotations": "^1.13",
         "doctrine/collections": "^1.6",
+        "symfony/http-client": "^4.4|^5",
         "symfony/http-kernel": "^4.4|^5",
+        "symfony/property-access": "^4.4|^5",
         "symfony/serializer": "^4.4|^5",
         "twig/twig": "^3.3"
     },
