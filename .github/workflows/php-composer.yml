@@ -22,13 +22,13 @@ jobs:
       id: composer-cache
       uses: actions/cache@v2
       with:
+        php-version: '7.0'
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
 
     - name: Install dependencies
+      with:
+        php-version: '7.0'
       run: composer install --prefer-dist --no-progress
-
-    - name: Run psr-12 test
-      run: composer run-script test-psr
