@@ -66,15 +66,11 @@ class Modeller
 
     public function getRawData()
     {
-        try {
-            return $this->client->request(
-                $this->getMethod(),
-                $this->getEndpoint(),
-                $this->getOptions()
-            );
-        } catch (ClientException $exception){
-            throw new \Exception($exception->getResponse()->getBody()->getContents(), $exception->getCode());
-        }
+        return $this->client->request(
+            $this->getMethod(),
+            $this->getEndpoint(),
+            $this->getOptions()
+        );
     }
 
     /**
