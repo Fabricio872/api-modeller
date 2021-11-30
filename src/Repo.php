@@ -77,4 +77,10 @@ class Repo
         $this->options = $options;
         return $this;
     }
+
+    public function addOptions(array $options): self
+    {
+        $this->options = array_merge_recursive($this->options, $options);
+        return $this;
+    }
 }

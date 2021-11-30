@@ -193,6 +193,8 @@ and sets query parameter 'page' to 2
         ));
     }
 ```
+> Notice `setOptions` have alternative function `addOptions` which merges existing and provided options
+
 > Notice that `Modeller::get()` must have correct namespace pointing to class from [configuration section](#step-2-initialize-library)
 
 This controller dumps model or collection of models form [this example](#example-model-with-multiple-resources) with namespace `Users::class`
