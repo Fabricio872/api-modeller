@@ -1,9 +1,9 @@
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/Fabricio872/api-modeller-bundle)
-![GitHub last commit](https://img.shields.io/github/last-commit/Fabricio872/api-modeller-bundle)
-[![PHP Composer Test and Tag](https://github.com/Fabricio872/api-modeller-bundle/actions/workflows/php-composer.yml/badge.svg)](https://github.com/Fabricio872/api-modeller-bundle/actions/workflows/php-composer.yml)
+![GitHub release](https://img.shields.io/github/v/release/Fabricio872/api-modeller)
+![GitHub last commit](https://img.shields.io/github/last-commit/Fabricio872/api-modeller)
+[![PHP Composer Test and Tag](https://github.com/Fabricio872/api-modeller/actions/workflows/php-composer.yml/badge.svg)](https://github.com/Fabricio872/api-modeller/actions/workflows/php-composer.yml)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/Fabricio872/api-modeller)
-![GitHub Repo stars](https://img.shields.io/github/stars/Fabricio872/api-modeller-bundle?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/Fabricio872/api-modeller?style=social)
 
 Valuable partners:
 
