@@ -6,13 +6,14 @@ namespace Fabricio872\ApiModeller;
 
 class Repo
 {
-    private string $model;
-
-    private ?string $identifier = '';
-
-    private array $parameters = [];
-
-    private array $options = [];
+    /** @var string */
+    private $model;
+    /** @var string|null */
+    private $identifier = '';
+    /** @var array */
+    private $parameters = [];
+    /** @var array */
+    private $options = [];
 
     public function __construct(string $model)
     {
@@ -29,12 +30,19 @@ class Repo
         return $this->model;
     }
 
-    public function getIdentifier(): ?string
+    /**
+     * @return string|null
+     */
+    public function getIdentifier()
     {
         return $this->identifier;
     }
 
-    public function setIdentifier(?string $identifier): self
+    /**
+     * @param string|null $identifier
+     * @return $this
+     */
+    public function setIdentifier($identifier): self
     {
         $this->identifier = $identifier;
         return $this;
@@ -42,13 +50,18 @@ class Repo
 
     /**
      * Parameters documentation
+     * @return array|null
      */
-    public function getParameters(): ?array
+    public function getParameters()
     {
         return $this->parameters;
     }
 
-    public function setParameters(?array $parameters): self
+    /**
+     * @param array|null $parameters
+     * @return $this
+     */
+    public function setParameters($parameters): self
     {
         $this->parameters = $parameters;
         return $this;

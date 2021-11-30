@@ -6,5 +6,5 @@ namespace Fabricio872\ApiModeller\ClientAdapter;
 
 interface ClientInterface
 {
-    public function request(string $method, string $endpoint, array $options): ?string;
+    public function request(string $method, string $endpoint, array $options): string;
 }
