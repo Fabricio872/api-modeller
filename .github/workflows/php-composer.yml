@@ -2,7 +2,7 @@ name: PHP Composer Test
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ v1 ]
 
 jobs:
   test:
