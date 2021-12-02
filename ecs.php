@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use PHP_CodeSniffer\Standards\Generic\Sniffs\Metrics\CyclomaticComplexitySniff;
 use PhpCsFixer\Fixer\ArrayNotation\ArraySyntaxFixer;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\EasyCodingStandard\ValueObject\Option;
@@ -19,6 +20,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->call('configure', [[
             'syntax' => 'short',
         ]]);
+    $services->set(CyclomaticComplexitySniff::class)
+        ->property('complexity', 13)
+        ->property('absoluteComplexity', 13);
 
     $containerConfigurator->import(SetList::PSR_12);
     $containerConfigurator->import(SetList::SYMPLIFY);

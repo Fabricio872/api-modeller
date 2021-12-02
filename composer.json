@@ -12,6 +12,7 @@
     },
     "require": {
         "php": "^7.2|^8.0",
+        "ext-json": "*",
         "doctrine/annotations": "^1.13",
         "doctrine/collections": "^1.6",
         "symfony/http-client": "^4.4|^5",
@@ -21,13 +22,22 @@
         "twig/twig": "^3.3"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.4|^5",
+        "phpunit/phpunit": "^8.5",
         "symplify/easy-coding-standard": "^9.4"
     },
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "Fabricio872\\ApiModeller\\": "src/"
+
+        },
+        "exclude-from-classmap": [
+            "/tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -38,5 +48,7 @@
     ],
     "scripts": {
         "test-psr": "vendor/bin/ecs check src",
-        "fix-psr": "vendor/bin/ecs check src --fix"    }
+        "fix-psr": "vendor/bin/ecs check src --fix",
+        "test": "vendor/phpunit/phpunit/phpunit --no-configuration tests/"
+    }
 }

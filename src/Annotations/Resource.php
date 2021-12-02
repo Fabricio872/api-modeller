@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Fabricio872\ApiModeller\Annotations;
 
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
 /**
  * @Annotation
- * @NamedArgumentConstructor()
  * @Target({"CLASS", "ANNOTATION"})
  */
 final class Resource implements ResourceInterface
@@ -39,16 +36,4 @@ final class Resource implements ResourceInterface
      * @var array
      */
     public $options;
-
-    public function __construct(
-        string $endpoint = '',
-        ?string $type = 'json',
-        ?string $method = 'GET',
-        ?array $options = []
-    ) {
-        $this->endpoint = $endpoint;
-        $this->type = $type;
-        $this->method = $method;
-        $this->options = $options;
-    }
 }

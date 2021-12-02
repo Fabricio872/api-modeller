@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Fabricio872\ApiModeller\Annotations\Resource;
 use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
+use Fabricio872\ApiModeller\Annotations\SubModel;
 use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -35,6 +36,11 @@ class Modeller
      */
     private $twig;
 
+    /**
+     * @var Repo
+     */
+    private $repo;
+
     public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
     {
         $this->reader = $reader;
@@ -43,28 +49,106 @@ class Modeller
     }
 
     /**
+     * @return string
+     */
+    public function getRawData()
+    {
+        return $this->client->request($this->getMethod(), $this->getEndpoint(), $this->getOptions());
+    }
+
+    public function setRepo(Repo $repo): self
+    {
+        $this->repo = $repo;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->getAnnotation()
+            ->method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint()
+    {
+        return self::renderEndpoint($this->getAnnotation(), $this->repo);
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return array_merge_recursive($this->getAnnotation()->options, $this->repo->getOptions());
+    }
+
+    /**
      * @return ArrayCollection|mixed
      */
-    public function getData(Repo $repo)
+    public function getData()
     {
-        $annotation = $this->getResource($repo->getModel(), $repo->getIdentifier());
-        $response = $this->client->request(
-            $annotation->method,
-            self::renderEndpoint($annotation, $repo),
-            array_merge_recursive($annotation->options, $repo->getOptions())
-        );
+        $normalizedContent = self::getSerializer()->decode((string) $this->getRawData(), $this->getAnnotation()->type);
 
-        $normalizedContent = self::getSerializer()->decode($response, $annotation->type);
-        $return = new ArrayCollection();
-        if (array_values($normalizedContent) === $normalizedContent) {
-            foreach ($normalizedContent as $normalizedItem) {
-                $return->add(self::getSerializer()->denormalize($normalizedItem, $repo->getModel()));
+        if ($normalizedContent === null) {
+            return new ArrayCollection();
+        }
+        return $this->modelBuilder($normalizedContent, $this->repo->getModel());
+    }
+
+    /**
+     * @return resource
+     */
+    private function getAnnotation()
+    {
+        return $this->getResource($this->repo->getModel(), $this->repo->getIdentifier());
+    }
+
+    /**
+     * @return array|ArrayCollection|object
+     */
+    private function modelBuilder(array $normalizedData, string $model)
+    {
+        if (array_values($normalizedData) === $normalizedData) {
+            $return = new ArrayCollection();
+            foreach ($normalizedData as $normalizedItem) {
+                $return->add($this->subModelBuilder(self::getSerializer()->denormalize($normalizedItem, $model)));
             }
             return $return;
         }
-        return self::getSerializer()->denormalize($normalizedContent, $repo->getModel());
+        return $this->subModelBuilder(self::getSerializer()->denormalize($normalizedData, $model));
     }
 
+    /**
+     * @param array|object $denormalized
+     * @return array|object
+     */
+    private function subModelBuilder($denormalized)
+    {
+        $reflectionClass = new \ReflectionClass($denormalized);
+
+        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+            $subModel = $this->reader->getPropertyAnnotation($reflectionProperty, SubModel::class);
+            if ($subModel instanceof SubModel) {
+                $reflectionProperty->setAccessible(true);
+                if ($reflectionProperty->getValue($denormalized) !== null) {
+                    $reflectionProperty->setValue(
+                        $denormalized,
+                        $this->modelBuilder($reflectionProperty->getValue($denormalized), $subModel->model)
+                    );
+                }
+            }
+        }
+        return $denormalized;
+    }
+
+    /**
+     * @return Serializer
+     */
     private static function getSerializer()
     {
         $encoders = [new XmlEncoder(), new JsonEncoder()];

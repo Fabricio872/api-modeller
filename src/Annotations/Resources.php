@@ -17,7 +17,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  */
 final class Resources implements ResourceInterface
 {
-    public array $resources;
+    /**
+     * @var array
+     */
+    public $resources;
 
     public function __construct(array $resources = [])
     {

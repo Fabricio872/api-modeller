@@ -15,21 +15,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
-
     - uses: paulhatch/semantic-version@v4.0.2
       id: version
       with:
@@ -47,9 +32,11 @@ jobs:
         change_path: "src"
         # Indicate whether short tags like 'v1' should be supported. If false only full
         # tags like 'v1.0.0' will be recognized.
-        short_tags: true
+        short_tags: false
         # If this is set to true, *every* commit will be treated as a new version.
         bump_each_commit: false
+      env:
+        major_pattern: "2"
 
     - run: echo "${{ steps.version.outputs.version }}"
     - run: echo "${{ steps.version.outputs.version_tag }}"

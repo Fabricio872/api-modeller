@@ -6,4 +6,8 @@
 ###> Composer ###
 composer.lock
 /vendor/
-###> Composer ###
+###< Composer ###
+
+###> PHPUnit ###
+.phpunit.result.cache
+###< PHPUnit ###
