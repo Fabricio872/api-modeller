@@ -158,7 +158,7 @@ class Modeller
             $subModel = $this->reader->getPropertyAnnotation($reflectionProperty, SubModel::class);
             if ($subModel instanceof SubModel) {
                 $reflectionProperty->setAccessible(true);
-                if ($subModel->model != null) {
+                if ($reflectionProperty->getValue($denormalized) != null) {
                     $reflectionProperty->setValue(
                         $denormalized,
                         $this->modelBuilder(
