@@ -54,16 +54,6 @@ class Modeller
     }
 
     /**
-     * @return ArrayCollection|mixed
-     */
-    public function getData()
-    {
-        $normalizedContent = self::getSerializer()->decode((string)$this->getRawData(), $this->getAnnotation()->type);
-
-        return $this->modelBuilder($normalizedContent, $this->repo->getModel());
-    }
-
-    /**
      * @return string
      * @throws RuntimeError
      */
@@ -123,6 +113,19 @@ class Modeller
     }
 
     /**
+     * @return ArrayCollection|mixed
+     */
+    public function getData()
+    {
+        $normalizedContent = self::getSerializer()->decode((string)$this->getRawData(), $this->getAnnotation()->type);
+
+        if ($normalizedContent == null) {
+            return new ArrayCollection();
+        }
+        return $this->modelBuilder($normalizedContent, $this->repo->getModel());
+    }
+
+    /**
      * @param array $normalizedData
      * @param string $model
      * @return array|ArrayCollection|object
@@ -155,13 +158,15 @@ class Modeller
             $subModel = $this->reader->getPropertyAnnotation($reflectionProperty, SubModel::class);
             if ($subModel instanceof SubModel) {
                 $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue(
-                    $denormalized,
-                    $this->modelBuilder(
-                        $reflectionProperty->getValue($denormalized),
-                        $subModel->model
-                    )
-                );
+                if ($subModel->model != null) {
+                    $reflectionProperty->setValue(
+                        $denormalized,
+                        $this->modelBuilder(
+                            $reflectionProperty->getValue($denormalized),
+                            $subModel->model
+                        )
+                    );
+                }
             }
         }
         return $denormalized;
