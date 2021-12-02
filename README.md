@@ -1,7 +1,7 @@
 
 ![GitHub release](https://img.shields.io/github/v/release/Fabricio872/api-modeller)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Fabricio872/api-modeller)
-[![PHP Composer Test and Tag](https://github.com/Fabricio872/api-modeller/actions/workflows/php-composer.yml/badge.svg)](https://github.com/Fabricio872/api-modeller/actions/workflows/php-composer.yml)
+[![PHP Composer Test and Tag](https://github.com/Fabricio872/api-modeller/actions/workflows/php-8.0-test.yml/badge.svg)](https://github.com/Fabricio872/api-modeller/actions/workflows/php-8.0-test.yml)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/Fabricio872/api-modeller)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Fabricio872/api-modeller?style=social)
 
