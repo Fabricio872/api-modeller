@@ -6,13 +6,24 @@ namespace Fabricio872\ApiModeller;
 
 class Repo
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $model;
-    /** @var string|null */
+
+    /**
+     * @var string|null
+     */
     private $identifier = '';
-    /** @var array */
+
+    /**
+     * @var array
+     */
     private $parameters = [];
-    /** @var array */
+
+    /**
+     * @var array
+     */
     private $options = [];
 
     public function __construct(string $model)
@@ -50,6 +61,7 @@ class Repo
 
     /**
      * Parameters documentation
+     *
      * @return array|null
      */
     public function getParameters()
@@ -80,7 +92,7 @@ class Repo
 
     public function addOptions(array $options): self
     {
-        $this->options = array_merge_recursive($this->options, $options);
+        $this->options = array_replace_recursive($this->options, $options);
         return $this;
     }
 }

@@ -11,22 +11,33 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.0",
-        "doctrine/annotations": "^1.4",
-        "doctrine/collections": "^1.4",
-        "guzzlehttp/guzzle": "^6.5",
-        "symfony/http-kernel": "^3.4",
-        "symfony/property-access": "^3.4",
-        "symfony/serializer": "^3.4",
-        "twig/twig": "^2.12"
+        "php": "^7.2|^8.0",
+        "ext-json": "*",
+        "doctrine/annotations": "^1.13",
+        "doctrine/collections": "^1.6",
+        "symfony/http-client": "^4.4|^5",
+        "symfony/http-kernel": "^4.4|^5",
+        "symfony/property-access": "^4.4|^5",
+        "symfony/serializer": "^4.4|^5",
+        "twig/twig": "^3.3"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^3.4"
+        "phpunit/phpunit": "^8.5",
+        "symplify/easy-coding-standard": "^9.4"
     },
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "Fabricio872\\ApiModeller\\": "src/"
+
+        },
+        "exclude-from-classmap": [
+            "/tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -37,5 +48,7 @@
     ],
     "scripts": {
         "test-psr": "vendor/bin/ecs check src",
-        "fix-psr": "vendor/bin/ecs check src --fix"    }
+        "fix-psr": "vendor/bin/ecs check src --fix",
+        "test": "vendor/phpunit/phpunit/phpunit --no-configuration tests/"
+    }
 }

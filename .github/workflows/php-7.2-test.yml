@@ -1,8 +1,8 @@
-name: PHP Composer Test
+name: PHP 7.2 Test
 
 on:
   pull_request:
-    branches: [ v1 ]
+    branches: [ main ]
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
       id: setup-php
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.0'
+        php-version: '7.2'
 
     - name: Print PHP version
       run: echo ${{ steps.setup-php.outputs.php-version }}
@@ -38,3 +38,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+
+    - name: Run tests
+      run: composer run-script test

@@ -41,11 +41,6 @@ class Modeller
      */
     private $repo;
 
-    /**
-     * @param Reader $reader
-     * @param ClientInterface $client
-     * @param Environment $twig
-     */
     public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
     {
         $this->reader = $reader;
@@ -55,22 +50,13 @@ class Modeller
 
     /**
      * @return string
-     * @throws RuntimeError
      */
     public function getRawData()
     {
-        return $this->client->request(
-            $this->getMethod(),
-            $this->getEndpoint(),
-            $this->getOptions()
-        );
+        return $this->client->request($this->getMethod(), $this->getEndpoint(), $this->getOptions());
     }
 
-    /**
-     * @param Repo $repo
-     * @return Modeller
-     */
-    public function setRepo(Repo $repo): Modeller
+    public function setRepo(Repo $repo): self
     {
         $this->repo = $repo;
         return $this;
@@ -78,16 +64,15 @@ class Modeller
 
     /**
      * @return string
-     * @throws \Exception
      */
     public function getMethod()
     {
-        return $this->getAnnotation()->method;
+        return $this->getAnnotation()
+            ->method;
     }
 
     /**
      * @return string
-     * @throws RuntimeError
      */
     public function getEndpoint()
     {
@@ -96,7 +81,6 @@ class Modeller
 
     /**
      * @return array
-     * @throws \Exception
      */
     public function getOptions()
     {
@@ -104,8 +88,20 @@ class Modeller
     }
 
     /**
-     * @return Resource
-     * @throws \Exception
+     * @return ArrayCollection|mixed
+     */
+    public function getData()
+    {
+        $normalizedContent = self::getSerializer()->decode((string) $this->getRawData(), $this->getAnnotation()->type);
+
+        if ($normalizedContent === null) {
+            return new ArrayCollection();
+        }
+        return $this->modelBuilder($normalizedContent, $this->repo->getModel());
+    }
+
+    /**
+     * @return resource
      */
     private function getAnnotation()
     {
@@ -113,30 +109,13 @@ class Modeller
     }
 
     /**
-     * @return ArrayCollection|mixed
-     */
-    public function getData()
-    {
-        $normalizedContent = self::getSerializer()->decode((string)$this->getRawData(), $this->getAnnotation()->type);
-
-        if ($normalizedContent == null) {
-            return new ArrayCollection();
-        }
-        return $this->modelBuilder($normalizedContent, $this->repo->getModel());
-    }
-
-    /**
-     * @param array $normalizedData
-     * @param string $model
      * @return array|ArrayCollection|object
-     * @throws \ReflectionException
      */
     private function modelBuilder(array $normalizedData, string $model)
     {
         if (array_values($normalizedData) === $normalizedData) {
             $return = new ArrayCollection();
             foreach ($normalizedData as $normalizedItem) {
-
                 $return->add($this->subModelBuilder(self::getSerializer()->denormalize($normalizedItem, $model)));
             }
             return $return;
@@ -147,24 +126,19 @@ class Modeller
     /**
      * @param array|object $denormalized
      * @return array|object
-     * @throws \ReflectionException
      */
     private function subModelBuilder($denormalized)
     {
         $reflectionClass = new \ReflectionClass($denormalized);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-
             $subModel = $this->reader->getPropertyAnnotation($reflectionProperty, SubModel::class);
             if ($subModel instanceof SubModel) {
                 $reflectionProperty->setAccessible(true);
-                if ($reflectionProperty->getValue($denormalized) != null) {
+                if ($reflectionProperty->getValue($denormalized) !== null) {
                     $reflectionProperty->setValue(
                         $denormalized,
-                        $this->modelBuilder(
-                            $reflectionProperty->getValue($denormalized),
-                            $subModel->model
-                        )
+                        $this->modelBuilder($reflectionProperty->getValue($denormalized), $subModel->model)
                     );
                 }
             }
@@ -183,14 +157,6 @@ class Modeller
         return new Serializer($normalizers, $encoders);
     }
 
-    /**
-     * @param Resource $annotation
-     * @param Repo $repo
-     * @return string
-     * @throws RuntimeError
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\SyntaxError
-     */
     private function renderEndpoint(Resource $annotation, Repo $repo): string
     {
         try {
@@ -203,19 +169,13 @@ class Modeller
         return $rendered;
     }
 
-    /**
-     * @param string $model
-     * @param string $identifier
-     * @return Resource
-     * @throws \ReflectionException
-     */
     private function getResource(string $model, string $identifier): Resource
     {
         $reflection = new \ReflectionClass($model);
 
         $resourceInterface = $this->reader->getClassAnnotation($reflection, ResourceInterface::class);
         if ($resourceInterface instanceof Resources) {
-            if (!array_key_exists($identifier, $resourceInterface->resources)) {
+            if (! array_key_exists($identifier, $resourceInterface->resources)) {
                 throw new \Exception(sprintf('Identifier: "%s" does not exists in Model: "%s"', $identifier, $model));
             }
             return $resourceInterface->resources[$identifier];

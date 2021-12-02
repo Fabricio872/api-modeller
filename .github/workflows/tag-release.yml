@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ v1 ]
+    branches: [ main ]
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
         # If this is set to true, *every* commit will be treated as a new version.
         bump_each_commit: false
       env:
-        major_pattern: "1"
+        major_pattern: "2"
 
     - run: echo "${{ steps.version.outputs.version }}"
     - run: echo "${{ steps.version.outputs.version_tag }}"
