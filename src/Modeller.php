@@ -174,6 +174,9 @@ class Modeller
         $reflection = new \ReflectionClass($model);
 
         $resourceInterface = $this->reader->getClassAnnotation($reflection, ResourceInterface::class);
+        if ($resourceInterface === null && $reflection->getParentClass()) {
+            return $this->getResource($reflection->getParentClass()->getName(), $identifier);
+        }
         if ($resourceInterface instanceof Resources) {
             if (! array_key_exists($identifier, $resourceInterface->resources)) {
                 throw new \Exception(sprintf('Identifier: "%s" does not exists in Model: "%s"', $identifier, $model));
