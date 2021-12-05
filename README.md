@@ -232,3 +232,44 @@ from model) to url configuration and can override global twig variables
 
 ### setIdentifier
 This method is required in case when you use multiple Resources for single model as shown in [this example](#example-model-with-multiple-resources)
+
+## Model Title
+
+Model title is useful if your data arrives covered in another object like this
+
+```json
+{
+  "data": [
+    {
+      "myData": "data"
+    }
+  ]
+}
+```
+
+in this case your model would have title `data` to map your model variable directly to `myData` and not to `data` object:
+
+```php
+// src/ApiModels/Data.php
+
+use Fabricio872\ApiModeller\Annotations\Resource;
+use Fabricio872\ApiModeller\Annotations\ModelTitle;
+
+/**
+ * @Resource(
+ *     endpoint="{{api_url}}/api/data",
+ *     method="GET",
+ *     type="json",
+ *     options={
+ *          "headers"={
+ *              "accept"= "application/json"
+ *          }
+ *     }
+ * )
+ * @ModelTitle("data")
+ */
+class Data
+{
+    public $myData;
+}
+```
