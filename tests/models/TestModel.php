@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests;
+namespace Tests\models;
 
 use Fabricio872\ApiModeller\Annotations\Resource;
 use Fabricio872\ApiModeller\Annotations\Resources;
+use Fabricio872\ApiModeller\Annotations\SubModel;
 
 /**
  * @Resources({
@@ -29,6 +30,13 @@ use Fabricio872\ApiModeller\Annotations\Resources;
  *      ),
  * })
  */
-abstract class TestModelAbstract
+class TestModel
 {
+    public $method;
+    public $endpoint;
+    public $options;
+    /**
+     * @SubModel(TestSubModel::class)
+     */
+    public $subClass;
 }

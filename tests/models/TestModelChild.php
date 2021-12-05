@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\models;
 
 use Fabricio872\ApiModeller\Annotations\SubModel;
 

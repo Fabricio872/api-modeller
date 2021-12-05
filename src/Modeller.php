@@ -6,6 +6,7 @@ namespace Fabricio872\ApiModeller;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Fabricio872\ApiModeller\Annotations\ModelTitle;
 use Fabricio872\ApiModeller\Annotations\Resource;
 use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
@@ -113,6 +114,13 @@ class Modeller
      */
     private function modelBuilder(array $normalizedData, string $model)
     {
+        $reflectionClass = new \ReflectionClass($model);
+        $modelTitle = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
+        if ($modelTitle && $modelTitle->title) {
+            //shifting normalized data if title is present
+            $normalizedData = $normalizedData[current(array_keys($normalizedData))];
+        }
+
         if (array_values($normalizedData) === $normalizedData) {
             $return = new ArrayCollection();
             foreach ($normalizedData as $normalizedItem) {

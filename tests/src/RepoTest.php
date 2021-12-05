@@ -4,7 +4,7 @@ namespace Tests\src;
 
 use Fabricio872\ApiModeller\Repo;
 use PHPUnit\Framework\TestCase;
-use Tests\TestModel;
+use Tests\models\TestModel;
 
 class RepoTest extends TestCase
 {

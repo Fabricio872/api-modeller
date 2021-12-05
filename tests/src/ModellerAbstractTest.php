@@ -6,10 +6,9 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Fabricio872\ApiModeller\Modeller;
 use Fabricio872\ApiModeller\Repo;
 use PHPUnit\Framework\TestCase;
+use Tests\models\TestModelChild;
+use Tests\models\TestSubModel;
 use Tests\TestClient;
-use Tests\TestModel;
-use Tests\TestModelChild;
-use Tests\TestSubModel;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\models;
 
 class TestSubModel
 {
