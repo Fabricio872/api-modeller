@@ -12,7 +12,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor()
  * @Target({"CLASS"})
  * @Attributes(
- *     @Attribute("resource", type="array")
+ * @Attribute("resource", type="array")
  * )
  */
 final class Resources implements ResourceInterface

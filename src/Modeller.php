@@ -12,10 +12,7 @@ use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
 use Fabricio872\ApiModeller\Annotations\SubModel;
 use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
 use Twig\Source;
@@ -42,11 +39,21 @@ class Modeller
      */
     private $repo;
 
-    public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
-    {
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    public function __construct(
+        Reader $reader,
+        ClientInterface $client,
+        Environment $twig,
+        SerializerInterface $serializer
+    ) {
         $this->reader = $reader;
         $this->client = $client;
         $this->twig = $twig;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -93,7 +100,7 @@ class Modeller
      */
     public function getData()
     {
-        $normalizedContent = self::getSerializer()->decode((string) $this->getRawData(), $this->getAnnotation()->type);
+        $normalizedContent = $this->serializer->decode((string) $this->getRawData(), $this->getAnnotation()->type);
 
         if ($normalizedContent === null) {
             return new ArrayCollection();
@@ -112,31 +119,36 @@ class Modeller
     /**
      * @return array|ArrayCollection|object
      */
-    private function modelBuilder(array $normalizedData, string $model)
-    {
+    private function modelBuilder(
+        array $normalizedData,
+        string $model
+    ) {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitle = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
         if ($modelTitle && $modelTitle->title) {
             //shifting normalized data if title is present
-            $normalizedData = $normalizedData[current(array_keys($normalizedData))];
+            $normalizedData = $normalizedData[current(
+                array_keys($normalizedData)
+            )];
         }
 
         if (array_values($normalizedData) === $normalizedData) {
             $return = new ArrayCollection();
             foreach ($normalizedData as $normalizedItem) {
-                $return->add($this->subModelBuilder(self::getSerializer()->denormalize($normalizedItem, $model)));
+                $return->add($this->subModelBuilder($this->serializer->denormalize($normalizedItem, $model)));
             }
             return $return;
         }
-        return $this->subModelBuilder(self::getSerializer()->denormalize($normalizedData, $model));
+        return $this->subModelBuilder($this->serializer->denormalize($normalizedData, $model));
     }
 
     /**
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder($denormalized)
-    {
+    private function subModelBuilder(
+        $denormalized
+    ) {
         $reflectionClass = new \ReflectionClass($denormalized);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
@@ -152,17 +164,6 @@ class Modeller
             }
         }
         return $denormalized;
-    }
-
-    /**
-     * @return Serializer
-     */
-    private static function getSerializer()
-    {
-        $encoders = [new XmlEncoder(), new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-
-        return new Serializer($normalizers, $encoders);
     }
 
     private function renderEndpoint(Resource $annotation, Repo $repo): string
