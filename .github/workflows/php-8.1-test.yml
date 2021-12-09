@@ -1,4 +1,4 @@
-name: PHP 7.2 Test
+name: PHP 8.1 Test
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
       id: setup-php
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
+        php-version: '8.1'
 
     - name: Print PHP version
       run: echo ${{ steps.setup-php.outputs.php-version }}

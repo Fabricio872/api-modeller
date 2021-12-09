@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Fabricio872\ApiModeller\Modeller;
 use Fabricio872\ApiModeller\Repo;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Tests\models\TestModel;
 use Tests\models\TestTitledModel;
 use Tests\models\TestSubModel;
@@ -146,10 +149,16 @@ class ModellerTest extends TestCase
         $twig = new Environment($loader);
         $twig->addGlobal("api_url", "http://test.com");
 
+        $serializer = new Serializer(
+            [new ObjectNormalizer()],
+            ['json' => new JsonEncoder()]
+        );
+
         return new Modeller(
             $reader,
             $client,
-            $twig
+            $twig,
+            $serializer
         );
     }
 
@@ -164,10 +173,16 @@ class ModellerTest extends TestCase
         $twig = new Environment($loader);
         $twig->addGlobal("api_url", "http://test.com");
 
+        $serializer = new Serializer(
+            [new ObjectNormalizer()],
+            ['json' => new JsonEncoder()]
+        );
+
         return new Modeller(
             $reader,
             $client,
-            $twig
+            $twig,
+            $serializer
         );
     }
 
@@ -182,10 +197,16 @@ class ModellerTest extends TestCase
         $twig = new Environment($loader);
         $twig->addGlobal("api_url", "http://test.com");
 
+        $serializer = new Serializer(
+            [new ObjectNormalizer()],
+            ['json' => new JsonEncoder()]
+        );
+
         return new Modeller(
             $reader,
             $client,
-            $twig
+            $twig,
+            $serializer
         );
     }
 

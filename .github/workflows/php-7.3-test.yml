@@ -1,4 +1,4 @@
-name: PHP 7.2 Test
+name: PHP 7.3 Test
 
 on:
   pull_request:
