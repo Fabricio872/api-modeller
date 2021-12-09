@@ -128,6 +128,10 @@ class Modeller
             $normalizedData = $normalizedData[current(array_keys($normalizedData))];
         }
 
+        if ($normalizedData == null) {
+            return null;
+        }
+
         if (array_values($normalizedData) === $normalizedData) {
             $return = new ArrayCollection();
             foreach ($normalizedData as $normalizedItem) {
