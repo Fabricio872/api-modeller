@@ -128,7 +128,7 @@ class ModellerTest extends TestCase
         $model = new TestModel();
         $model->endpoint = "http://test.com/api/users";
         $model->method = "GET";
-        $model->subClass = new ArrayCollection();
+        $model->subClass = null;
         $model->options = [
             "headers" => [
                 "accept" => "application/json"
