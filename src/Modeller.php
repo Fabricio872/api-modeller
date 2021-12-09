@@ -128,7 +128,7 @@ class Modeller
             $normalizedData = $normalizedData[current(array_keys($normalizedData))];
         }
 
-        if ($normalizedData == null) {
+        if ($normalizedData === null) {
             return null;
         }
 
