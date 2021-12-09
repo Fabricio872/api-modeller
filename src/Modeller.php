@@ -119,17 +119,13 @@ class Modeller
     /**
      * @return array|ArrayCollection|object
      */
-    private function modelBuilder(
-        array $normalizedData,
-        string $model
-    ) {
+    private function modelBuilder(array $normalizedData, string $model)
+    {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitle = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
         if ($modelTitle && $modelTitle->title) {
             //shifting normalized data if title is present
-            $normalizedData = $normalizedData[current(
-                array_keys($normalizedData)
-            )];
+            $normalizedData = $normalizedData[current(array_keys($normalizedData))];
         }
 
         if (array_values($normalizedData) === $normalizedData) {
@@ -146,9 +142,8 @@ class Modeller
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder(
-        $denormalized
-    ) {
+    private function subModelBuilder($denormalized)
+    {
         $reflectionClass = new \ReflectionClass($denormalized);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
