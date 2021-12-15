@@ -4,6 +4,7 @@ namespace Tests\src;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
 use Fabricio872\ApiModeller\Modeller;
 use Fabricio872\ApiModeller\Repo;
 use PHPUnit\Framework\TestCase;
@@ -11,11 +12,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Tests\models\TestModel;
-use Tests\models\TestTitledModel;
 use Tests\models\TestSubModel;
-use Tests\TestClient;
-use Tests\TestClientEmpty;
-use Tests\TestTitledClient;
+use Tests\models\TestTitledModel;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -143,7 +141,21 @@ class ModellerTest extends TestCase
 
         $reader = new AnnotationReader();
 
-        $client = new TestClient();
+        $clientMock = $this->createMock(ClientInterface::class);
+        $clientMock->method('request')->willReturn(json_encode([
+            "method" => "GET",
+            "endpoint" => "http://test.com/api/users",
+            "options" =>[
+                "headers" => [
+                    "accept" => "application/json"
+                ]
+            ],
+            "subClass" => [
+                "sub1" => true,
+                "sub2" => 420,
+                "sub3" => "test"
+            ]
+        ]));
 
         $loader = new FilesystemLoader();
         $twig = new Environment($loader);
@@ -156,7 +168,7 @@ class ModellerTest extends TestCase
 
         return new Modeller(
             $reader,
-            $client,
+            $clientMock,
             $twig,
             $serializer
         );
@@ -167,7 +179,17 @@ class ModellerTest extends TestCase
 
         $reader = new AnnotationReader();
 
-        $client = new TestClientEmpty();
+        $clientMock = $this->createMock(ClientInterface::class);
+        $clientMock->method('request')->willReturn(json_encode([
+            "method" => "GET",
+            "endpoint" => "http://test.com/api/users",
+            "options" =>[
+                "headers" => [
+                    "accept" => "application/json"
+                ]
+            ],
+            "subClass" => []
+        ]));
 
         $loader = new FilesystemLoader();
         $twig = new Environment($loader);
@@ -180,7 +202,7 @@ class ModellerTest extends TestCase
 
         return new Modeller(
             $reader,
-            $client,
+            $clientMock,
             $twig,
             $serializer
         );
@@ -191,7 +213,23 @@ class ModellerTest extends TestCase
 
         $reader = new AnnotationReader();
 
-        $client = new TestTitledClient();
+        $clientMock = $this->createMock(ClientInterface::class);
+        $clientMock->method('request')->willReturn(json_encode([
+            "testTitle" => [
+                "method" => "GET",
+                "endpoint" => "http://test.com/api/users",
+                "options" =>[
+                    "headers" => [
+                        "accept" => "application/json"
+                    ]
+                ],
+                "subClass" => [
+                    "sub1" => true,
+                    "sub2" => 420,
+                    "sub3" => "test"
+                ]
+            ]
+        ]));
 
         $loader = new FilesystemLoader();
         $twig = new Environment($loader);
@@ -204,7 +242,7 @@ class ModellerTest extends TestCase
 
         return new Modeller(
             $reader,
-            $client,
+            $clientMock,
             $twig,
             $serializer
         );
