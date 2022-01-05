@@ -39,6 +39,28 @@ $ composer require fabricio872/api-modeller
 Create new instance of `Fabricio872\ApiModeller\Modeller`. For legacy project is easiest to implement it with Singleton pattern which gives you 
 instance anywhere where you call it as described [here](#calling-the-api).
 
+> create new class for client adapter of your choice in this example we use GuzzleHttp/Client
+
+```php
+use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
+use GuzzleHttp\Client;
+
+class GuzzleClient implements ClientInterface
+{
+    private Client $client;
+
+    public function __construct()
+    {
+        $this->client = new Client();
+    }
+
+    public function request(string $method, string $endpoint, array $options): string
+    {
+        return $this->client->request($method, $endpoint, $options)->getBody()->getContents();
+    }
+}
+```
+
 > create new class somewhere in your composer autoload directory with name Modeller and add your namespace
 ```php
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -57,8 +79,7 @@ class Modeller
         if (!isset(self::$modeller)) {
             $reader = new AnnotationReader();
 
-            $httpClient = HttpClient::create();
-            $client = new Symfony($httpClient);
+            $client = new GuzzleClient(); // class we have created above
 
             $loader = new FilesystemLoader();
             $twig = new Environment($loader, [
