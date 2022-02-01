@@ -6,12 +6,15 @@ namespace Fabricio872\ApiModeller;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Exception;
 use Fabricio872\ApiModeller\Annotations\ModelTitle;
 use Fabricio872\ApiModeller\Annotations\Resource;
 use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
 use Fabricio872\ApiModeller\Annotations\SubModel;
 use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
+use ReflectionException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
@@ -96,7 +99,7 @@ class Modeller
     }
 
     /**
-     * @return ArrayCollection|mixed
+     * @return ArrayCollection
      */
     public function getData()
     {
@@ -110,6 +113,7 @@ class Modeller
 
     /**
      * @return resource
+     * @throws Exception
      */
     private function getAnnotation()
     {
@@ -118,15 +122,13 @@ class Modeller
 
     /**
      * @return array|ArrayCollection|object
+     * @throws ExceptionInterface|ReflectionException
      */
     private function modelBuilder(array $normalizedData, string $model)
     {
         $reflectionClass = new \ReflectionClass($model);
-        $modelTitle = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
-        if ($modelTitle && $modelTitle->title) {
-            //shifting normalized data if title is present
-            $normalizedData = $normalizedData[current(array_keys($normalizedData))];
-        }
+        $modelTitles = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
+        $this->shiftData($normalizedData, $modelTitles->title);
 
         if ($normalizedData === null) {
             return null;
@@ -165,6 +167,23 @@ class Modeller
         return $denormalized;
     }
 
+    private function shiftData(array &$data, array $titleNest)
+    {
+        if (is_array($titleNest)) {
+            foreach ($titleNest as $titles){
+                if (!is_array($titles)){
+                    $titles = [$titles];
+                }
+
+                foreach ($titles as $title){
+                    if (isset($data[$title])){
+                        $data = $data[$title];
+                    }
+                }
+            }
+        }
+    }
+
     private function renderEndpoint(Resource $annotation, Repo $repo): string
     {
         try {
@@ -187,7 +206,7 @@ class Modeller
         }
         if ($resourceInterface instanceof Resources) {
             if (! array_key_exists($identifier, $resourceInterface->resources)) {
-                throw new \Exception(sprintf('Identifier: "%s" does not exists in Model: "%s"', $identifier, $model));
+                throw new Exception(sprintf('Identifier: "%s" does not exists in Model: "%s"', $identifier, $model));
             }
             return $resourceInterface->resources[$identifier];
         }
