@@ -294,3 +294,12 @@ class Data
     public $myData;
 }
 ```
+you can also nest ModelTitles to array with multiple options for each title for example:
+
+```php
+
+/**
+ * @ModelTitle("data", {"subTitle1", "subTitle2"})
+ */
+```
+this will search in incoming response for data and in it for either subTitle1 or subTitle2
