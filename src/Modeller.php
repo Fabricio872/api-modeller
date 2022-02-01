@@ -13,8 +13,6 @@ use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
 use Fabricio872\ApiModeller\Annotations\SubModel;
 use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
-use ReflectionException;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
@@ -113,7 +111,6 @@ class Modeller
 
     /**
      * @return resource
-     * @throws Exception
      */
     private function getAnnotation()
     {
@@ -122,13 +119,17 @@ class Modeller
 
     /**
      * @return array|ArrayCollection|object
-     * @throws ExceptionInterface|ReflectionException
      */
-    private function modelBuilder(array $normalizedData, string $model)
+    private function modelBuilder(
+        array $normalizedData,
+        string $model
+    )
     {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitles = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
-        $this->shiftData($normalizedData, $modelTitles->title);
+        if ($modelTitles !== null) {
+            $this->shiftData($normalizedData, $modelTitles->title);
+        }
 
         if ($normalizedData === null) {
             return null;
@@ -148,7 +149,9 @@ class Modeller
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder($denormalized)
+    private function subModelBuilder(
+        $denormalized
+    )
     {
         $reflectionClass = new \ReflectionClass($denormalized);
 
@@ -170,13 +173,13 @@ class Modeller
     private function shiftData(array &$data, array $titleNest)
     {
         if (is_array($titleNest)) {
-            foreach ($titleNest as $titles){
-                if (!is_array($titles)){
+            foreach ($titleNest as $titles) {
+                if (! is_array($titles)) {
                     $titles = [$titles];
                 }
 
-                foreach ($titles as $title){
-                    if (isset($data[$title])){
+                foreach ($titles as $title) {
+                    if (isset($data[$title])) {
                         $data = $data[$title];
                     }
                 }
