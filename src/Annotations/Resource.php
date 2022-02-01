@@ -12,7 +12,7 @@ final class Resource implements ResourceInterface
 {
     /**
      * URL to exact endpoint for the model to receive data from
-
+     *
      * @var string
      */
     public $endpoint;
@@ -31,7 +31,7 @@ final class Resource implements ResourceInterface
 
     /**
      * Option described on
-
+     *
      * @Ar
      * @var array
      */

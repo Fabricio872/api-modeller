@@ -120,10 +120,7 @@ class Modeller
     /**
      * @return array|ArrayCollection|object
      */
-    private function modelBuilder(
-        array $normalizedData,
-        string $model
-    )
+    private function modelBuilder(array $normalizedData, string $model)
     {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitles = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
@@ -149,9 +146,7 @@ class Modeller
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder(
-        $denormalized
-    )
+    private function subModelBuilder($denormalized)
     {
         $reflectionClass = new \ReflectionClass($denormalized);
 
@@ -170,7 +165,7 @@ class Modeller
         return $denormalized;
     }
 
-    private function shiftData(array &$data, array $titleNest)
+    private function shiftData(array & $data, array $titleNest)
     {
         if (is_array($titleNest)) {
             foreach ($titleNest as $titles) {
