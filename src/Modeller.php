@@ -118,11 +118,7 @@ class Modeller
     }
 
     /**
-     * @param array $normalizedData
-     * @param string $model
      * @return array|ArrayCollection|object
-     * @throws \ReflectionException
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     private function modelBuilder(array $normalizedData, string $model)
     {
