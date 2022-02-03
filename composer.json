@@ -2,7 +2,11 @@
     "name": "fabricio872/api-modeller",
     "description": "Library for translating foreign API to Doctrine-like models",
     "type": "symfony-bundle",
-    "keywords": ["library", "api", "model"],
+    "keywords": [
+        "library",
+        "api",
+        "model"
+    ],
     "config": {
         "optimize-autoloader": true,
         "preferred-install": {
@@ -28,7 +32,6 @@
     "autoload": {
         "psr-4": {
             "Fabricio872\\ApiModeller\\": "src/"
-
         },
         "exclude-from-classmap": [
             "/tests/"
