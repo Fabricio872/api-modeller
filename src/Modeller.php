@@ -13,6 +13,11 @@ use Fabricio872\ApiModeller\Annotations\ResourceInterface;
 use Fabricio872\ApiModeller\Annotations\Resources;
 use Fabricio872\ApiModeller\Annotations\SubModel;
 use Fabricio872\ApiModeller\ClientAdapter\ClientInterface;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
@@ -48,13 +53,16 @@ class Modeller
     public function __construct(
         Reader $reader,
         ClientInterface $client,
-        Environment $twig,
-        SerializerInterface $serializer
+        Environment $twig
     ) {
         $this->reader = $reader;
         $this->client = $client;
         $this->twig = $twig;
-        $this->serializer = $serializer;
+        $this->serializer = new Serializer([new ObjectNormalizer()], [
+            new JsonEncoder(),
+            new XmlEncoder(),
+            new CsvEncoder(),
+        ]);
     }
 
     /**
@@ -120,8 +128,10 @@ class Modeller
     /**
      * @return array|ArrayCollection|object
      */
-    private function modelBuilder(array $normalizedData, string $model)
-    {
+    private function modelBuilder(
+        array $normalizedData,
+        string $model
+    ) {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitles = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
         if ($modelTitles !== null) {
@@ -146,8 +156,9 @@ class Modeller
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder($denormalized)
-    {
+    private function subModelBuilder(
+        $denormalized
+    ) {
         $reflectionClass = new \ReflectionClass($denormalized);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
@@ -165,7 +176,7 @@ class Modeller
         return $denormalized;
     }
 
-    private function shiftData(array & $data, array $titleNest)
+    private function shiftData(array &$data, array $titleNest)
     {
         if (is_array($titleNest)) {
             foreach ($titleNest as $titles) {

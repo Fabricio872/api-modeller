@@ -53,15 +53,16 @@ class Repo
      * @param string|null $identifier
      * @return $this
      */
-    public function setIdentifier($identifier): self
-    {
+    public function setIdentifier(
+        $identifier
+    ): self {
         $this->identifier = $identifier;
         return $this;
     }
 
     /**
      * Parameters documentation
-     *
+
      * @return array|null
      */
     public function getParameters()
@@ -73,8 +74,9 @@ class Repo
      * @param array|null $parameters
      * @return $this
      */
-    public function setParameters($parameters): self
-    {
+    public function setParameters(
+        $parameters
+    ): self {
         $this->parameters = $parameters;
         return $this;
     }
