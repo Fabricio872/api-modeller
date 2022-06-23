@@ -50,11 +50,8 @@ class Modeller
      */
     private $serializer;
 
-    public function __construct(
-        Reader $reader,
-        ClientInterface $client,
-        Environment $twig
-    ) {
+    public function __construct(Reader $reader, ClientInterface $client, Environment $twig)
+    {
         $this->reader = $reader;
         $this->client = $client;
         $this->twig = $twig;
@@ -128,10 +125,8 @@ class Modeller
     /**
      * @return array|ArrayCollection|object
      */
-    private function modelBuilder(
-        array $normalizedData,
-        string $model
-    ) {
+    private function modelBuilder(array $normalizedData, string $model)
+    {
         $reflectionClass = new \ReflectionClass($model);
         $modelTitles = $this->reader->getClassAnnotation($reflectionClass, ModelTitle::class);
         if ($modelTitles !== null) {
@@ -156,9 +151,8 @@ class Modeller
      * @param array|object $denormalized
      * @return array|object
      */
-    private function subModelBuilder(
-        $denormalized
-    ) {
+    private function subModelBuilder($denormalized)
+    {
         $reflectionClass = new \ReflectionClass($denormalized);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
@@ -176,7 +170,7 @@ class Modeller
         return $denormalized;
     }
 
-    private function shiftData(array &$data, array $titleNest)
+    private function shiftData(array & $data, array $titleNest)
     {
         if (is_array($titleNest)) {
             foreach ($titleNest as $titles) {
