@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fabricio872\ApiModeller\Annotations;
 
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use phpDocumentor\Reflection\Types\ClassString;
 
 /**
  * @Annotation
@@ -14,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 class SubModel
 {
     /**
-     * @var string
+     * @var ClassString
      */
     public $model;
 
